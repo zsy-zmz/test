@@ -1,24 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <!-- <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <title>第3个网页</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我的告白</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #ffcccc, #d4e8ff);
+      font-family: 'Microsoft YaHei', sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #sakuraCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content, .success {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 340px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      animation: popIn 0.6s ease-out;
+      position: relative;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h2 {
+      color: #e91e63;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      position: relative;
+      height: 60px;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    #agree {
+      background: #e91e63;
+      color: white;
+      width: 110px;
+      z-index: 3;
+    }
+
+    #disagree {
+      background: #ccc;
+      color: #333;
+      position: absolute;
+      left: 220px;
+      top: 0;
+      width: 110px;
+    }
+
+    /* 闪现特效 */
+    @keyframes teleport {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0; transform: scale(1.3); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #disagree.teleport {
+      animation: teleport 0.3s ease;
+    }
+
+    .success {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <!-- 显示一段文字 -->
-    "哈哈哈哈哈哈哈，爸爸我可很厉害的。"
 
-    <!-- 创建一个按钮，并绑定点击事件 -->
-    <button onclick="showMessage()">点击我</button>
+  <canvas id="sakuraCanvas"></canvas>
 
-    <!-- 定义按钮的功能 -->
-    <script>
-        function showMessage() {
-            alert("嘻嘻，你这也太棒了吧！"); // 弹出提示框
-        }
-    </script>
+  <div class="modal">
+    <div class="modal-content" id="askBox">
+      <h2>❤️ 有个问题想问你</h2>
+      <p>同意做我女朋友好不好？</p>
+      <div class="buttons">
+        <button id="agree">✅ 好啊</button>
+        <button id="disagree">❌ 不要</button>
+      </div>
+    </div>
+
+    <div class="success" id="success">
+      <h2>太开心了！🥰</h2>
+      <p>从今天起<br>你是我的唯一了<br>我会好好爱你的</p>
+      <p>🌸 樱花飘落的季节<br>也是我们故事的开始</p>
+    </div>
+  </div>
+
+  <script>
+    // ===== 樱花背景（轻量版）=====
+    const canvas = document.getElementById('sakuraCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const sakuras = [];
+    for (let i = 0; i < 20; i++) {
+      sakuras.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 6 + 4,
+        speedX: (Math.random() - 0.5) * 1.5,
+        speedY: Math.random() * 1 + 0.3,
+        opacity: Math.random() * 0.6 + 0.4
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      sakuras.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if (p.y > canvas.height) p.y = -10;
+        if (p.x < 0 || p.x > canvas.width) p.x = Math.random() * canvas.width;
+
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = '#ffaec9';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // ===== 超远瞬移系统（稳定版）=====
+    const disagree = document.getElementById('disagree');
+    const buttons = document.querySelector('.buttons');
+    const rect = buttons.getBoundingClientRect();
+
+    // 预定义 4 个最远角落（避开左侧“好啊”）
+    const corners = [
+      { x: rect.width - 120, y: 10 },      // 右上
+      { x: rect.width - 120, y: 40 },      // 右下
+      { x: 180, y: 40 },                   // 中下
+      { x: 200, y: 10 }                    // 中上
+    ];
+
+    // 鼠标进入时瞬移
+    disagree.addEventListener('mouseenter', function (e) {
+      // 随机选一个角落
+      const target = corners[Math.floor(Math.random() * corners.length)];
+
+      // 添加闪现动画
+      disagree.classList.remove('teleport');
+      setTimeout(() => {
+        disagree.classList.add('teleport');
+      }, 10);
+
+      // 瞬移！
+      disagree.style.left = target.x + 'px';
+      disagree.style.top = target.y + 'px';
+
+      // 防止默认行为
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    // 点“同意” → 成功
+    document.getElementById('agree').addEventListener('click', () => {
+      document.getElementById('askBox').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    });
+
+    // 彩蛋：躲5次后自动投降
+    let dodgeCount = 0;
+    disagree.addEventListener('click', (e) => {
+      e.preventDefault();
+      dodgeCount++;
+      if (dodgeCount >= 5) {
+        alert("逃了这么多次…其实我早就想说：我愿意！😊");
+        document.getElementById('agree').click();
+      }
+    });
+  </script>
 </body>
-
 </html>
-
