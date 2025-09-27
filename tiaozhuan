@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>跳转到王者荣耀</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #f0f0f0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #2d8cf0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <h2>点击按钮，尝试打开《王者荣耀》</h2>
+    <button onclick="openKingGlory()">🎮 打开王者荣耀</button>
+
+    <script>
+        function openKingGlory() {
+            // 方案1：尝试唤起王者荣耀（部分安卓设备可能支持）
+            const urlScheme = "kingglory://";
+            
+            // 方案2：跳转到应用商店（备用方案）
+            const fallbackUrl = "https://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.tmgp.sgame";
+
+            // 在新窗口打开游戏协议
+            const link = document.createElement('a');
+            link.href = urlScheme;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 如果没有打开，提示用户手动打开或跳转到应用商店
+            setTimeout(() => {
+                window.location.href = fallbackUrl;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
