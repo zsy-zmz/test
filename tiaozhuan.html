@@ -2,41 +2,126 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>tiaozhuan</title>
+    <title>月下开黑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f9e0e8, #f4a261); /* 暖粉到琥珀红，如晚霞 */
+            color: #fff;
+            font-family: "Microsoft YaHei", "SimSun", serif;
             text-align: center;
-            margin-top: 100px;
-            background-color: #f0f0f0;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
         }
+
+        /* 添加飘动的光点，营造梦幻感 */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0; }
+        }
+
+        .content {
+            max-width: 500px;
+            z-index: 10;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .poem {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 20px 0;
+            opacity: 0.95;
+        }
+
         button {
-            padding: 15px 30px;
+            padding: 14px 32px;
             font-size: 18px;
-            background-color: #2d8cf0;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
             cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            font-weight: bold;
         }
+
         button:hover {
-            background-color: #1976d2;
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
         }
     </style>
 </head>
 <body>
-    <h2>冲冲冲</h2>
-    <button onclick="openKingGlory()">🎮 打开</button>
+
+    <!-- 飘动的光点 -->
+    <script>
+        for (let i = 0; i < 20; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = (Math.random() * 100 + 50) + 'vh';
+            sparkle.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(sparkle);
+        }
+    </script>
+
+    <div class="content">
+        <h1>🌙 今夜，月色真美</h1>
+
+        <div class="poem">
+            长安月下人如玉，<br>
+            剑影刀光共徘徊。<br>
+            若问今宵何处去，<br>
+            可愿与我开一局？<br><br>
+
+            不为胜负，<br>
+            只为并肩而战的刹那，<br>
+            你在，我在，<br>
+            便已足够。
+        </div>
+
+        <button onclick="inviteToGame()">✨ 一起上分吗？</button>
+        <div class="message" id="statusMessage"></div>
+    </div>
 
     <script>
-        function openKingGlory() {
-            // 方案1：尝试唤起王者荣耀（部分安卓设备可能支持）
+        function inviteToGame() {
             const urlScheme = "kingglory://";
-            
-            // 方案2：跳转到应用商店（备用方案）
             const fallbackUrl = "https://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.tmgp.sgame";
+            const message = document.getElementById('statusMessage');
 
-            // 在新窗口打开游戏协议
+            // 尝试唤起游戏
             const link = document.createElement('a');
             link.href = urlScheme;
             link.target = '_blank';
@@ -44,9 +129,12 @@
             link.click();
             document.body.removeChild(link);
 
-            // 如果没有打开，提示用户手动打开或跳转到应用商店
+            message.innerText = '正在呼唤王者…';
+
+            // 2秒后跳转应用商店（若未打开）
             setTimeout(() => {
                 window.location.href = fallbackUrl;
+                message.innerText = '若未自动打开，请前往应用商店下载。';
             }, 2000);
         }
     </script>
